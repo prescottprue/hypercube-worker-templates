@@ -21,5 +21,11 @@
   "bugs": {
     "url": "https://github.com/prescottprue/hypercube-worker-templates/issues"
   },
-  "homepage": "http://hypercube.kyper.io"
+  "homepage": "http://hypercube.kyper.io",
+  "dependencies": {
+    "aws-sdk": "^2.1.39",
+    "q": "^1.4.1",
+    "s3": "^4.4.0",
+    "underscore": "^1.8.3"
+  }
 }
