@@ -1,0 +1,25 @@
+{
+  "name": "hypercube-worker-templates",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/prescottprue/hypercube-worker-templates"
+  },
+  "keywords": [
+    "AWS",
+    "SQS",
+    "hypercube",
+    "worker",
+    "nodejs"
+  ],
+  "author": "Prescott Prue",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prescottprue/hypercube-worker-templates/issues"
+  },
+  "homepage": "http://hypercube.kyper.io"
+}
