@@ -1,7 +1,8 @@
 var port = process.env.PORT || 3000,
     http = require('http'),
-    fs = require('fs');
-var s3 = require('./lib/s3Util');
+    fs = require('fs'),
+    s3 = require('s3'),
+    s3Util = require('./lib/s3Util');
 
 var log = function(entry) {
     fs.appendFileSync('/tmp/sample-app.log', new Date().toISOString() + ' - ' + entry + '\n');
@@ -18,20 +19,22 @@ var server = http.createServer(function (req, res) {
     req.on('end', function() {
       if (req.url === '/') {
         log('Received message: ' + body);
-        s3.uploadDir(body.split(":")[0], "./lib").then(function (file){
-          // res.writeHead(200, 'OK', {'Content-Type': 'application/json'});
-          log('Upload successful' + JSON.stringify(file));
-          res.json(file);
+        var templatesBucket = "hypercube-templates"
+        var bucketName = body.split(":")[0];
+        var templateName = body.split(":")[1] || "default";
+        s3Util.copyBucketToBucket({name:"hypercube-templates", prefix:templateName}, {name:bucketName}).then(function(){
+          console.log('Template copy successful');
+          res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
+          res.end();
         }, function(err){
-          log('Error uploading ' + JSON.stringify(err));
-          res.status(400);
-        });
+          log('Error uploading:' + JSON.stringify(err));
+          res.status(400).send('Error copying template');
+        })
       } else if (req.url = '/scheduled') {
         log('Received task ' + req.headers['x-aws-sqsd-taskname'] + ' scheduled at ' + req.headers['x-aws-sqsd-scheduled-at']);
+        res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
+        res.end();
       }
-
-      res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
-      res.end();
     });
   } else {
     res.writeHead(200);
@@ -45,3 +48,7 @@ server.listen(port);
 
 // Put a friendly message on the terminal
 console.log('Server running at http://127.0.0.1:' + port + '/');
+
+function copyTemplateToBucket(templateName, bucketName){
+
+}
