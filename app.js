@@ -5,7 +5,7 @@ var port = process.env.PORT || 3000,
     s3Util = require('./lib/s3Util');
 
 var log = function(entry) {
-    fs.appendFileSync('/tmp/sample-app.log', new Date().toISOString() + ' - ' + entry + '\n');
+  fs.appendFileSync('/tmp/sample-app.log', new Date().toISOString() + ' - ' + entry + '\n');
 };
 
 var server = http.createServer(function (req, res) {
@@ -17,13 +17,11 @@ var server = http.createServer(function (req, res) {
     });
 
     req.on('end', function() {
-      if (req.url === '/') {
-        log('Received message: ' + body);
+      if (req.url === '/message') {
         var templatesBucket = "hypercube-templates"
         var bucketName = body.split(":")[0];
         var templateName = body.split(":")[1] || "default";
         s3Util.copyBucketToBucket({name:"hypercube-templates", prefix:templateName}, {name:bucketName}).then(function(){
-          console.log('Template copy successful');
           res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
           res.end();
         }, function(err){
@@ -34,11 +32,13 @@ var server = http.createServer(function (req, res) {
         log('Received task ' + req.headers['x-aws-sqsd-taskname'] + ' scheduled at ' + req.headers['x-aws-sqsd-scheduled-at']);
         res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
         res.end();
+      } else {
+        res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
+        res.end();
       }
     });
   } else {
-    res.writeHead(200);
-    res.write(html);
+    res.writeHead(200,'OK', {'Content-Type': 'text/plain'});
     res.end();
   }
 });
@@ -47,8 +47,4 @@ var server = http.createServer(function (req, res) {
 server.listen(port);
 
 // Put a friendly message on the terminal
-console.log('Server running at http://127.0.0.1:' + port + '/');
-
-function copyTemplateToBucket(templateName, bucketName){
-
-}
+// console.log('Server running at http://127.0.0.1:' + port + '/');
